@@ -5,13 +5,12 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"time"
 )
 
 const (
 	MsgIDLength       = 16
-	minValidMsgLength = MsgIDLength + 8 + 2 // Timestamp + Attempts
+	minValidMsgLength = MsgIDLength + 8 + 2 + 8// Timestamp + Attempts + deferred
 )
 
 type MessageID [MsgIDLength]byte
@@ -38,12 +37,45 @@ func NewMessage(id MessageID, body []byte) *Message {
 	}
 }
 
+// WriteTo writes message Timestamp, Attempts, ID and body to writer.
+// May reserved for writing to client.
 func (m *Message) WriteTo(w io.Writer) (int64, error) {
 	var buf [10]byte
 	var total int64
 
 	binary.BigEndian.PutUint64(buf[:8], uint64(m.Timestamp))
 	binary.BigEndian.PutUint16(buf[8:10], uint16(m.Attempts))
+
+	n, err := w.Write(buf[:])
+	total += int64(n)
+	if err != nil {
+		return total, err
+	}
+
+	n, err = w.Write(m.ID[:])
+	total += int64(n)
+	if err != nil {
+		return total, err
+	}
+
+	n, err = w.Write(m.Body)
+	total += int64(n)
+	if err != nil {
+		return total, err
+	}
+
+	return total, nil
+}
+
+// WriteAllTo writes all message metadata(including "deferred") and body to the writer.
+// Used mainly for backend write.
+func (m *Message) WriteAllTo(w io.Writer) (int64, error) {
+	var buf [18]byte
+	var total int64
+
+	binary.BigEndian.PutUint64(buf[:8], uint64(m.Timestamp))
+	binary.BigEndian.PutUint16(buf[8:10], uint16(m.Attempts))
+	binary.BigEndian.PutUint64(buf[10:18], uint64(m.deferred))
 
 	n, err := w.Write(buf[:])
 	total += int64(n)
@@ -75,25 +107,17 @@ func decodeMessage(b []byte) (*Message, error) {
 
 	msg.Timestamp = int64(binary.BigEndian.Uint64(b[:8]))
 	msg.Attempts = binary.BigEndian.Uint16(b[8:10])
-
-	buf := bytes.NewBuffer(b[10:])
-
-	_, err := io.ReadFull(buf, msg.ID[:])
-	if err != nil {
-		return nil, err
+	msg.deferred = time.Duration(binary.BigEndian.Uint64(b[10:18]))
+	for i := 0;i < MsgIDLength ; i++  {
+		msg.ID[i] = b[18 + i]
 	}
-
-	msg.Body, err = ioutil.ReadAll(buf)
-	if err != nil {
-		return nil, err
-	}
-
+	msg.Body = b[18 + MsgIDLength:]
 	return &msg, nil
 }
 
 func writeMessageToBackend(buf *bytes.Buffer, msg *Message, bq BackendQueue) error {
 	buf.Reset()
-	_, err := msg.WriteTo(buf)
+	_, err := msg.WriteAllTo(buf)
 	if err != nil {
 		return err
 	}
