@@ -57,7 +57,7 @@ func NewTopic(topicName string, ctx *context, deleteCallback func(*Topic)) *Topi
 			ctx.nsqd.getOpts().DataPath,
 			ctx.nsqd.getOpts().MaxBytesPerFile,
 			int32(minValidMsgLength),
-			int32(ctx.nsqd.getOpts().MaxMsgSize),
+			int32(ctx.nsqd.getOpts().MaxMsgSize)+minValidMsgLength,
 			ctx.nsqd.getOpts().SyncEvery,
 			ctx.nsqd.getOpts().SyncTimeout,
 			ctx.nsqd.getOpts().Logger)
@@ -190,11 +190,11 @@ func (t *Topic) put(m *Message) error {
 		b := bufferPoolGet()
 		err := writeMessageToBackend(b, m, t.backend)
 		bufferPoolPut(b)
+		t.ctx.nsqd.SetHealth(err)
 		if err != nil {
 			t.ctx.nsqd.logf(
 				"TOPIC(%s) ERROR: failed to write message to backend - %s",
 				t.name, err)
-			t.ctx.nsqd.SetHealth(err)
 			return err
 		}
 	}
