@@ -18,7 +18,6 @@ import (
 	"github.com/nsqio/nsq/internal/app"
 	"github.com/nsqio/nsq/internal/version"
 	"github.com/nsqio/nsq/nsqd"
-	"net/http"
 )
 
 type tlsRequiredOption int
