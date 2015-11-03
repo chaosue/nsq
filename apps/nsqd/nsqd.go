@@ -18,8 +18,8 @@ import (
 	"github.com/nsqio/nsq/internal/app"
 	"github.com/nsqio/nsq/internal/version"
 	"github.com/nsqio/nsq/nsqd"
-	_ "net/http/pprof"
 	"net/http"
+	_ "net/http/pprof"
 )
 
 type tlsRequiredOption int
@@ -177,7 +177,7 @@ func (cfg config) Validate() {
 }
 
 func main() {
-	go func(){
+	go func() {
 		http.ListenAndServe(":6789", nil)
 	}()
 	flagSet := nsqFlagset()

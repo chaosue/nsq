@@ -10,7 +10,7 @@ import (
 
 const (
 	MsgIDLength       = 16
-	minValidMsgLength = MsgIDLength + 8 + 2 + 8// Timestamp + Attempts + deferred
+	minValidMsgLength = MsgIDLength + 8 + 2 + 8 // Timestamp + Attempts + deferred
 )
 
 type MessageID [MsgIDLength]byte
@@ -108,10 +108,10 @@ func decodeMessage(b []byte) (*Message, error) {
 	msg.Timestamp = int64(binary.BigEndian.Uint64(b[:8]))
 	msg.Attempts = binary.BigEndian.Uint16(b[8:10])
 	msg.deferred = time.Duration(binary.BigEndian.Uint64(b[10:18]))
-	for i := 0;i < MsgIDLength ; i++  {
-		msg.ID[i] = b[18 + i]
+	for i := 0; i < MsgIDLength; i++ {
+		msg.ID[i] = b[18+i]
 	}
-	msg.Body = b[18 + MsgIDLength:]
+	msg.Body = b[18+MsgIDLength:]
 	return &msg, nil
 }
 

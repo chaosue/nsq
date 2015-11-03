@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"container/heap"
 	"errors"
+	"github.com/nsqio/nsq/internal/pqueue"
+	"github.com/nsqio/nsq/internal/quantile"
 	"math"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
-	"github.com/nsqio/nsq/internal/pqueue"
-	"github.com/nsqio/nsq/internal/quantile"
 )
 
 type Consumer interface {
@@ -195,7 +195,7 @@ func (c *Channel) exit(deleted bool) error {
 		dErr := c.backend.Delete()
 		dErrD := c.backendDeferred.Delete()
 		if dErr != nil {
-		   err = errors.New("Failed to delete backend queue: " + dErr.Error())
+			err = errors.New("Failed to delete backend queue: " + dErr.Error())
 		}
 
 		if dErrD != nil {
@@ -702,43 +702,43 @@ exit:
 	return dirty
 }
 
-func (c *Channel)loadDeferredQueueFromBackend(){
+func (c *Channel) loadDeferredQueueFromBackend() {
 	var msg *Message
 	var buf []byte
 	var err error
 	var loadedCount int
 	depth := c.backendDeferred.Depth()
-	for{
+	for {
 		select {
-			case <-c.exitChan:
-				c.ctx.nsqd.logf("CHANNEL(%s): %v/%v deferred messages are loaded from backend. in exiting, stop loading.", c.name, loadedCount, depth)
-				return
-			case buf = <-c.backendDeferred.ReadChan():
-				loadedCount += 1
-				msg, err = decodeMessage(buf)
-				if err != nil {
-					c.ctx.nsqd.logf("ERROR: failed to decode deferred message from backend - %s", err)
-					continue
+		case <-c.exitChan:
+			c.ctx.nsqd.logf("CHANNEL(%s): %v/%v deferred messages are loaded from backend. in exiting, stop loading.", c.name, loadedCount, depth)
+			return
+		case buf = <-c.backendDeferred.ReadChan():
+			loadedCount += 1
+			msg, err = decodeMessage(buf)
+			if err != nil {
+				c.ctx.nsqd.logf("ERROR: failed to decode deferred message from backend - %s", err)
+				continue
+			} else {
+				deferNow := time.Duration(msg.Timestamp + int64(msg.deferred) - time.Now().UnixNano())
+				if deferNow < 0 {
+					// put to ready queue
+					msg.deferred = 0
+					c.put(msg)
 				} else {
-					deferNow := time.Duration(msg.Timestamp + int64(msg.deferred) - time.Now().UnixNano())
-					if deferNow < 0 {
-						// put to ready queue
-						msg.deferred = 0
-						c.put(msg)
-					} else {
-						// put to deferred queue.
-						msg.deferred = deferNow
-						err = c.StartDeferredTimeout(msg, deferNow)
-						if err != nil {
-							c.ctx.nsqd.logf("ERROR: failed to put deferred message(%s) from backend to mem queue - %s", msg.ID, err)
-						}
+					// put to deferred queue.
+					msg.deferred = deferNow
+					err = c.StartDeferredTimeout(msg, deferNow)
+					if err != nil {
+						c.ctx.nsqd.logf("ERROR: failed to put deferred message(%s) from backend to mem queue - %s", msg.ID, err)
 					}
 				}
-			default:
-				if c.backendDeferred.Depth() < 1 {
-					c.ctx.nsqd.logf("CHANNEL(%s): all(%v) deferred messages are loaded from backend.", c.name, depth)
-					return
-				}
+			}
+		default:
+			if c.backendDeferred.Depth() < 1 {
+				c.ctx.nsqd.logf("CHANNEL(%s): all(%v) deferred messages are loaded from backend.", c.name, depth)
+				return
+			}
 		}
 	}
 }

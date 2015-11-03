@@ -22,11 +22,11 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"strings"
-	"os"
-	"time"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func bindataRead(data []byte, name string) ([]byte, error) {
@@ -55,9 +55,9 @@ type asset struct {
 }
 
 type bindataFileInfo struct {
-	name string
-	size int64
-	mode os.FileMode
+	name    string
+	size    int64
+	mode    os.FileMode
 	modTime time.Time
 }
 
@@ -96,7 +96,7 @@ func baseCss() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "base.css", size: 3227, mode: os.FileMode(420), modTime: time.Unix(1443542386, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -116,7 +116,7 @@ func bootstrapMinCss() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "bootstrap.min.css", size: 169990, mode: os.FileMode(420), modTime: time.Unix(1443542386, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -136,7 +136,7 @@ func faviconPng() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicon.png", size: 8515, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -156,7 +156,7 @@ func glyphiconsHalflingsRegularEot() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "glyphicons-halflings-regular.eot", size: 20127, mode: os.FileMode(420), modTime: time.Unix(1443542386, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -176,7 +176,7 @@ func glyphiconsHalflingsRegularSvg() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "glyphicons-halflings-regular.svg", size: 108738, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -196,7 +196,7 @@ func glyphiconsHalflingsRegularTtf() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "glyphicons-halflings-regular.ttf", size: 45404, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -216,7 +216,7 @@ func glyphiconsHalflingsRegularWoff() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "glyphicons-halflings-regular.woff", size: 23424, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -236,7 +236,7 @@ func glyphiconsHalflingsRegularWoff2() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "glyphicons-halflings-regular.woff2", size: 18028, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -256,7 +256,7 @@ func indexHtml() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "index.html", size: 1253, mode: os.FileMode(420), modTime: time.Unix(1443542386, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -276,7 +276,7 @@ func mainJs() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "main.js", size: 156794, mode: os.FileMode(420), modTime: time.Unix(1443542393, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -296,7 +296,7 @@ func mainJsMap() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "main.js.map", size: 467486, mode: os.FileMode(420), modTime: time.Unix(1443542393, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -316,7 +316,7 @@ func nsq_bluePng() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "nsq_blue.png", size: 8317, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -336,7 +336,7 @@ func vendorJs() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "vendor.js", size: 128415, mode: os.FileMode(420), modTime: time.Unix(1443542389, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -359,7 +359,7 @@ func Asset(name string) ([]byte, error) {
 // It simplifies safe initialization of global variables.
 func MustAsset(name string) []byte {
 	a, err := Asset(name)
-	if (err != nil) {
+	if err != nil {
 		panic("asset: Asset(" + name + "): " + err.Error())
 	}
 
@@ -392,19 +392,19 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"base.css": baseCss,
-	"bootstrap.min.css": bootstrapMinCss,
-	"favicon.png": faviconPng,
-	"glyphicons-halflings-regular.eot": glyphiconsHalflingsRegularEot,
-	"glyphicons-halflings-regular.svg": glyphiconsHalflingsRegularSvg,
-	"glyphicons-halflings-regular.ttf": glyphiconsHalflingsRegularTtf,
-	"glyphicons-halflings-regular.woff": glyphiconsHalflingsRegularWoff,
+	"base.css":                           baseCss,
+	"bootstrap.min.css":                  bootstrapMinCss,
+	"favicon.png":                        faviconPng,
+	"glyphicons-halflings-regular.eot":   glyphiconsHalflingsRegularEot,
+	"glyphicons-halflings-regular.svg":   glyphiconsHalflingsRegularSvg,
+	"glyphicons-halflings-regular.ttf":   glyphiconsHalflingsRegularTtf,
+	"glyphicons-halflings-regular.woff":  glyphiconsHalflingsRegularWoff,
 	"glyphicons-halflings-regular.woff2": glyphiconsHalflingsRegularWoff2,
-	"index.html": indexHtml,
-	"main.js": mainJs,
-	"main.js.map": mainJsMap,
-	"nsq_blue.png": nsq_bluePng,
-	"vendor.js": vendorJs,
+	"index.html":                         indexHtml,
+	"main.js":                            mainJs,
+	"main.js.map":                        mainJsMap,
+	"nsq_blue.png":                       nsq_bluePng,
+	"vendor.js":                          vendorJs,
 }
 
 // AssetDir returns the file names below a certain
@@ -443,82 +443,69 @@ func AssetDir(name string) ([]string, error) {
 }
 
 type bintree struct {
-	Func func() (*asset, error)
+	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
+
 var _bintree = &bintree{nil, map[string]*bintree{
-	"base.css": &bintree{baseCss, map[string]*bintree{
-	}},
-	"bootstrap.min.css": &bintree{bootstrapMinCss, map[string]*bintree{
-	}},
-	"favicon.png": &bintree{faviconPng, map[string]*bintree{
-	}},
-	"glyphicons-halflings-regular.eot": &bintree{glyphiconsHalflingsRegularEot, map[string]*bintree{
-	}},
-	"glyphicons-halflings-regular.svg": &bintree{glyphiconsHalflingsRegularSvg, map[string]*bintree{
-	}},
-	"glyphicons-halflings-regular.ttf": &bintree{glyphiconsHalflingsRegularTtf, map[string]*bintree{
-	}},
-	"glyphicons-halflings-regular.woff": &bintree{glyphiconsHalflingsRegularWoff, map[string]*bintree{
-	}},
-	"glyphicons-halflings-regular.woff2": &bintree{glyphiconsHalflingsRegularWoff2, map[string]*bintree{
-	}},
-	"index.html": &bintree{indexHtml, map[string]*bintree{
-	}},
-	"main.js": &bintree{mainJs, map[string]*bintree{
-	}},
-	"main.js.map": &bintree{mainJsMap, map[string]*bintree{
-	}},
-	"nsq_blue.png": &bintree{nsq_bluePng, map[string]*bintree{
-	}},
-	"vendor.js": &bintree{vendorJs, map[string]*bintree{
-	}},
+	"base.css":                           &bintree{baseCss, map[string]*bintree{}},
+	"bootstrap.min.css":                  &bintree{bootstrapMinCss, map[string]*bintree{}},
+	"favicon.png":                        &bintree{faviconPng, map[string]*bintree{}},
+	"glyphicons-halflings-regular.eot":   &bintree{glyphiconsHalflingsRegularEot, map[string]*bintree{}},
+	"glyphicons-halflings-regular.svg":   &bintree{glyphiconsHalflingsRegularSvg, map[string]*bintree{}},
+	"glyphicons-halflings-regular.ttf":   &bintree{glyphiconsHalflingsRegularTtf, map[string]*bintree{}},
+	"glyphicons-halflings-regular.woff":  &bintree{glyphiconsHalflingsRegularWoff, map[string]*bintree{}},
+	"glyphicons-halflings-regular.woff2": &bintree{glyphiconsHalflingsRegularWoff2, map[string]*bintree{}},
+	"index.html":                         &bintree{indexHtml, map[string]*bintree{}},
+	"main.js":                            &bintree{mainJs, map[string]*bintree{}},
+	"main.js.map":                        &bintree{mainJsMap, map[string]*bintree{}},
+	"nsq_blue.png":                       &bintree{nsq_bluePng, map[string]*bintree{}},
+	"vendor.js":                          &bintree{vendorJs, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
-        data, err := Asset(name)
-        if err != nil {
-                return err
-        }
-        info, err := AssetInfo(name)
-        if err != nil {
-                return err
-        }
-        err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
-        if err != nil {
-                return err
-        }
-        err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
-        if err != nil {
-                return err
-        }
-        err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
-        if err != nil {
-                return err
-        }
-        return nil
+	data, err := Asset(name)
+	if err != nil {
+		return err
+	}
+	info, err := AssetInfo(name)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	if err != nil {
+		return err
+	}
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
-        children, err := AssetDir(name)
-        // File
-        if err != nil {
-                return RestoreAsset(dir, name)
-        }
-        // Dir
-        for _, child := range children {
-                err = RestoreAssets(dir, filepath.Join(name, child))
-                if err != nil {
-                        return err
-                }
-        }
-        return nil
+	children, err := AssetDir(name)
+	// File
+	if err != nil {
+		return RestoreAsset(dir, name)
+	}
+	// Dir
+	for _, child := range children {
+		err = RestoreAssets(dir, filepath.Join(name, child))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func _filePath(dir, name string) string {
-        cannonicalName := strings.Replace(name, "\\", "/", -1)
-        return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-
