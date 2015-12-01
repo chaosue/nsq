@@ -28,6 +28,7 @@ type httpServer struct {
 	tlsEnabled  bool
 	tlsRequired bool
 	router      http.Handler
+	persistMetadataCheckChan  chan bool
 }
 
 func newHTTPServer(ctx *context, tlsEnabled bool, tlsRequired bool) *httpServer {
@@ -43,6 +44,7 @@ func newHTTPServer(ctx *context, tlsEnabled bool, tlsRequired bool) *httpServer 
 		tlsEnabled:  tlsEnabled,
 		tlsRequired: tlsRequired,
 		router:      router,
+		persistMetadataCheckChan: make(chan bool, 1),
 	}
 
 	router.Handle("GET", "/ping", http_api.Decorate(s.pingHandler, log, http_api.PlainText))
@@ -385,10 +387,12 @@ func (s *httpServer) doPauseTopic(w http.ResponseWriter, req *http.Request, ps h
 	}
 
 	// pro-actively persist metadata so in case of process failure
-	// nsqd won't suddenly (un)pause a topic
-	s.ctx.nsqd.Lock()
-	s.ctx.nsqd.PersistMetadata()
-	s.ctx.nsqd.Unlock()
+	// nsqd won't suddenly (un)pause a
+	if s.shouldPersistMetadata(){
+		s.ctx.nsqd.Lock()
+		s.ctx.nsqd.PersistMetadata()
+		s.ctx.nsqd.Unlock()
+	}
 	return nil, nil
 }
 
@@ -457,9 +461,11 @@ func (s *httpServer) doPauseChannel(w http.ResponseWriter, req *http.Request, ps
 
 	// pro-actively persist metadata so in case of process failure
 	// nsqd won't suddenly (un)pause a channel
-	s.ctx.nsqd.Lock()
-	s.ctx.nsqd.PersistMetadata()
-	s.ctx.nsqd.Unlock()
+	if s.shouldPersistMetadata(){
+		s.ctx.nsqd.Lock()
+		s.ctx.nsqd.PersistMetadata()
+		s.ctx.nsqd.Unlock()
+	}
 	return nil, nil
 }
 
@@ -621,6 +627,20 @@ func (s *httpServer) doConfig(w http.ResponseWriter, req *http.Request, ps httpr
 	}
 
 	return v, nil
+}
+
+// shouldPersistMetadata will test whether to persist metadata this time.
+// Since shouldPersistMetadata may be expensive, it should not run excessively.
+func (s *httpServer)shouldPersistMetadata()bool{
+	 select{
+		case s.persistMetadataCheckChan <- true:
+			time.AfterFunc(time.Second * 5, func(){
+				<-s.persistMetadataCheckChan
+			})
+			return true
+		default:
+			return false
+	}
 }
 
 func getOptByCfgName(opts interface{}, name string) (interface{}, bool) {
